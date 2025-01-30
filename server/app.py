@@ -26,6 +26,8 @@ load_dotenv()
 # API Configuration
 RAPIDAPI_KEY = os.getenv("RAPIDAPI_KEY")
 RAPIDAPI_HOST = os.getenv("RAPIDAPI_HOST")
+print(f"Loaded RAPIDAPI_HOST: {RAPIDAPI_HOST}")
+print(f"Loaded RAPIDAPI_KEY: {RAPIDAPI_KEY}")
 
 def fetch_wnba_data(endpoint, params={}):
        headers = {
@@ -45,6 +47,8 @@ def fetch_wnba_data(endpoint, params={}):
 @app.route('/')
 def home():
     return "Welcome to the WNBA Fantasy League!"
+
+
 
 # --- User Authentication Routes ---
 @app.route('/register', methods=['POST'])
@@ -166,6 +170,14 @@ def list_wnba_games():
 def get_team_data():
     game_id = request.args.get('game_id')
     return jsonify(fetch_wnba_data("wnba_team_data", {"game_id": game_id}))
+
+##test route to check values of api
+@app.route('/check_env')
+def check_env():
+    return jsonify({
+        "RAPIDAPI_HOST": RAPIDAPI_HOST,
+        "RAPIDAPI_KEY": RAPIDAPI_KEY
+    })
 
 if __name__ == "__main__":
     app.run(debug=True)
