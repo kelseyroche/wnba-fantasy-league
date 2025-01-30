@@ -34,3 +34,42 @@ function App() {
 }
 
 export default App
+
+// import React, { useState } from 'react';
+//    import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+//    import LandingPage from './components/LandingPage';
+//    import SignUp from './components/SignUp';
+//    import Login from './components/Login';
+//    import TeamDashboard from './components/TeamDashboard';
+//    import TransferPortal from './components/TransferPortal';
+//    import Leaderboard from './components/Leaderboard';
+//    import Profile from './components/Profile';
+
+//    function App() {
+//        const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+//        const PrivateRoute = ({ component: Component, ...rest }) => (
+//            <Route {...rest} render={(props) => (
+//                isAuthenticated
+//                    ? <Component {...props} />
+//                    : <Redirect to='/login' />
+//            )} />
+//        );
+
+//        return (
+//            <Router>
+//                <Switch>
+//                    <Route path="/" exact component={LandingPage} />
+//                    <Route path="/signup" component={SignUp} />
+//                    <Route path="/login" component={Login} />
+//                    <PrivateRoute path="/team-dashboard" component={TeamDashboard} />
+//                    <PrivateRoute path="/transfer-portal" component={TransferPortal} />
+//                    <PrivateRoute path="/leaderboard" component={Leaderboard} />
+//                    <PrivateRoute path="/profile" component={Profile} />
+//                    <Redirect to="/" />
+//                </Switch>
+//            </Router>
+//        );
+//    }
+
+//    export default App;
