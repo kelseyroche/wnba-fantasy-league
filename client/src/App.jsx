@@ -2,6 +2,8 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+// import 'fomantic-ui-css/semantic.min.css';
+
 
 function App() {
   const [count, setCount] = useState(0)
@@ -44,6 +46,8 @@ export default App
 //    import TransferPortal from './components/TransferPortal';
 //    import Leaderboard from './components/Leaderboard';
 //    import Profile from './components/Profile';
+//    import 'fomantic-ui-css/semantic.min.css';
+
 
 //    function App() {
 //        const [isAuthenticated, setIsAuthenticated] = useState(false);

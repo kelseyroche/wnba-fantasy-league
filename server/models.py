@@ -31,14 +31,14 @@ class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     season_score = db.Column(db.Integer, default=0)
-    locked = db.Column(db.Boolean, default=False)  # Indicate if the roster is locked
+    locked = db.Column(db.Boolean, default=False)  # Indicates if the roster is locked
 
     user = db.relationship("User", back_populates="team")
     roster_spots = db.relationship("RosterSpot", back_populates="team", cascade="all, delete-orphan")
 
     def calculate_season_score(self):
         """Calculate the total season score based on player's season points."""
-        self.season_score = sum(rs.player.season_points for rs in self.roster_spots)
+        self.season_score = sum(rs.season_points for rs in self.roster_spots)
         db.session.commit()
 
 
@@ -55,12 +55,18 @@ class Player(db.Model):
     def __repr__(self):
         return f"<Player {self.name}>"
 
+
 class RosterSpot(db.Model):
     __tablename__ = "roster_spots"
 
     id = db.Column(db.Integer, primary_key=True)
     player_id = db.Column(db.Integer, db.ForeignKey("players.id"), nullable=False)
     team_id = db.Column(db.Integer, db.ForeignKey("teams.id"), nullable=False)
+    season_points = db.Column(db.Integer, default=0)
 
     player = db.relationship("Player")
     team = db.relationship("Team", back_populates="roster_spots")
+
+    def update_season_points(self):
+        """Update the season points for this roster spot based on the associated player's points."""
+        self.season_points = self.player.season_points

@@ -1,16 +1,48 @@
-from app import app, db  # Ensure your Flask app is imported properly
-from models import Player  # Import your Player model
+from app import app, db
+from models import Player
 
 def seed_players():
     """Seed the database with initial top 30 players."""
     players = [
-        {"name": "Player 1", "position": "Guard", "value": 0},
-        {"name": "Player 2", "position": "Forward", "value": 0},
-        # Add more players here
+        {"name": "Player 1", "position": "Guard", "value": 8, "season_points": 100},
+        {"name": "Player 2", "position": "Forward", "value": 7, "season_points": 90},
+        {"name": "Player 3", "position": "Center", "value": 9, "season_points": 110},
+        {"name": "Player 4", "position": "Guard", "value": 6, "season_points": 85},
+        {"name": "Player 5", "position": "Forward", "value": 5, "season_points": 75},
+        {"name": "Player 6", "position": "Center", "value": 10, "season_points": 120},
+        {"name": "Player 7", "position": "Guard", "value": 4, "season_points": 65},
+        {"name": "Player 8", "position": "Forward", "value": 3, "season_points": 60},
+        {"name": "Player 9", "position": "Center", "value": 8, "season_points": 95},
+        {"name": "Player 10", "position": "Guard", "value": 7, "season_points": 90},
+        {"name": "Player 11", "position": "Forward", "value": 6, "season_points": 80},
+        {"name": "Player 12", "position": "Center", "value": 5, "season_points": 70},
+        {"name": "Player 13", "position": "Guard", "value": 9, "season_points": 110},
+        {"name": "Player 14", "position": "Forward", "value": 8, "season_points": 100},
+        {"name": "Player 15", "position": "Center", "value": 7, "season_points": 90},
+        {"name": "Player 16", "position": "Guard", "value": 10, "season_points": 120},
+        {"name": "Player 17", "position": "Forward", "value": 4, "season_points": 65},
+        {"name": "Player 18", "position": "Center", "value": 3, "season_points": 55},
+        {"name": "Player 19", "position": "Guard", "value": 2, "season_points": 50},
+        {"name": "Player 20", "position": "Forward", "value": 6, "season_points": 85},
+        {"name": "Player 21", "position": "Center", "value": 5, "season_points": 75},
+        {"name": "Player 22", "position": "Guard", "value": 4, "season_points": 60},
+        {"name": "Player 23", "position": "Forward", "value": 3, "season_points": 55},
+        {"name": "Player 24", "position": "Center", "value": 9, "season_points": 105},
+        {"name": "Player 25", "position": "Guard", "value": 8, "season_points": 95},
+        {"name": "Player 26", "position": "Forward", "value": 7, "season_points": 85},
+        {"name": "Player 27", "position": "Center", "value": 10, "season_points": 125},
+        {"name": "Player 28", "position": "Guard", "value": 2, "season_points": 45},
+        {"name": "Player 29", "position": "Forward", "value": 1, "season_points": 40},
+        {"name": "Player 30", "position": "Center", "value": 5, "season_points": 70},
     ]
 
     for player_data in players:
-        player = Player(name=player_data["name"], position=player_data["position"], value=player_data["value"])
+        player = Player(
+            name=player_data["name"],
+            position=player_data["position"],
+            value=player_data["value"],
+            season_points=player_data["season_points"]
+        )
         db.session.add(player)
 
     db.session.commit()

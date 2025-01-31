@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, session
+from flask import Flask, request, jsonify, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 import os
@@ -30,13 +30,69 @@ def get_current_user():
     user_id = session.get("user_id")
     return User.query.get(user_id) if user_id else None
 
+# Landing page
+@app.route('/')
+def landing_page():
+    """Landing page showing login and register options."""
+    if 'user_id' in session:
+        return redirect(url_for('view_my_team'))
+    return "Welcome to the WNBA Fantasy League! Please login or register."
+
+# Registration route
+@app.route('/register', methods=['POST'])
+def register_user():
+    """Register a new user."""
+    data = request.json
+    username = data.get('username')
+    email = data.get('email')
+    password = data.get('password')
+
+    if not username or not email or not password:
+        return jsonify({"error": "All fields are required"}), 400
+
+    if User.query.filter((User.username == username) | (User.email == email)).first():
+        return jsonify({"error": "User with this username or email already exists"}), 400
+
+    new_user = User(username=username, email=email)
+    new_user.set_password(password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    session["user_id"] = new_user.id
+    return jsonify({"message": "User registered successfully!"}), 201
+
+# Login route
+@app.route('/login', methods=['POST'])
+def login_user():
+    """Log in a user."""
+    data = request.json
+    email = data.get('email')
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({"error": "Email and password are required"}), 400
+
+    user = User.query.filter_by(email=email).first()
+    if user and user.check_password(password):
+        session["user_id"] = user.id
+        return redirect(url_for('view_my_team'))
+
+    return jsonify({"error": "Invalid email or password"}), 401
+
+# Logout route
+@app.route('/logout', methods=['POST'])
+def logout_user():
+    """Log out the current user."""
+    session.clear()
+    return redirect(url_for('landing_page'))
+
 # View user's team
 @app.route('/my_team', methods=['GET'])
 def view_my_team():
     """View the current user's team and their season score."""
     user = get_current_user()
     if not user:
-        return jsonify({"error": "Unauthorized"}), 401
+        return redirect(url_for('landing_page'))
 
     team = user.team
     if not team:
@@ -75,6 +131,17 @@ def submit_roster():
     data = request.json
     player_ids = data.get('player_ids')
 
+    # Check if the number of selected players exceeds the limit
+    if len(player_ids) > 5:
+        return jsonify({"error": "Cannot have more than 5 players on the roster"}), 400
+
+    # Calculate the total value of the selected players
+    total_value = sum(Player.query.get(player_id).value for player_id in player_ids)
+
+    # Check against the value limit
+    if total_value > 30:
+        return jsonify({"error": "Total value of selected players exceeds the limit"}), 400
+
     # Clear existing roster spots (if any)
     db.session.query(RosterSpot).filter_by(team_id=team.id).delete()
 
@@ -90,6 +157,28 @@ def submit_roster():
     db.session.commit()
 
     return jsonify({"message": "Roster submitted and locked successfully!"}), 200
+
+# Admin route
+@app.route('/admin/update_player_score', methods=['POST'])
+def update_player_score():
+    """Admin route to manually update player scores."""
+    data = request.json
+    player_id = data.get('player_id')
+    new_season_points = data.get('season_points')
+
+    player = Player.query.get(player_id)
+    if not player:
+        return jsonify({"error": "Player not found"}), 404
+
+    player.season_points = new_season_points
+    db.session.commit()
+
+    # Optionally, recalculate scores for all teams containing this player
+    teams = Team.query.join(RosterSpot).filter(RosterSpot.player_id == player.id).all()
+    for team in teams:
+        team.calculate_season_score()
+
+    return jsonify({"message": f"Player {player.name}'s score updated successfully!"}), 200
 
 # Run app
 if __name__ == '__main__':
