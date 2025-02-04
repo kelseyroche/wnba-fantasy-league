@@ -195,10 +195,12 @@ def view_my_team():
 @app.route('/submit_roster', methods=['POST'])
 def submit_roster():
     """Submit and lock the user's roster for the season."""
+    # Step 1: Authenticate user
     user = get_current_user()
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
 
+    # Step 2: Check if the team exists and is not locked
     team = user.team
     if not team:
         return jsonify({"error": "No team found for this user"}), 404
@@ -206,36 +208,43 @@ def submit_roster():
     if team.locked:
         return jsonify({"error": "Roster is already locked and cannot be changed"}), 400
 
+    # Step 3: Validate incoming data
     data = request.json
     player_ids = data.get('player_ids')
 
-    # Check if the number of selected players exceeds the limit
-    if len(player_ids) > 5:
-        return jsonify({"error": "Cannot have more than 5 players on the roster"}), 400
+    if not player_ids or len(player_ids) != 5:
+        return jsonify({"error": "You must submit exactly 5 players"}), 400
 
-    # Calculate the total value of the selected players
-    total_value = sum(Player.query.get(player_id).value for player_id in player_ids)
+    # Step 4: Validate player existence and calculate total value
+    total_value = 0
+    for player_id in player_ids:
+        player = Player.query.get(player_id)
+        if not player:
+            return jsonify({"error": f"Player with ID {player_id} not found"}), 404
+        total_value += player.value
 
-    # Check against the value limit
+    # Example value limit check, adjust as necessary
     if total_value > 30:
         return jsonify({"error": "Total value of selected players exceeds the limit"}), 400
 
-    # Clear existing roster spots (if any)
-    db.session.query(RosterSpot).filter_by(team_id=team.id).delete()
+    try:
+        # Step 5: Clear existing roster spots
+        db.session.query(RosterSpot).filter_by(team_id=team.id).delete()
 
-    # Add new players to the roster
-    for player_id in player_ids:
-        player = Player.query.get(player_id)
-        if player:
+        # Step 6: Add new players to the roster
+        for player_id in player_ids:
             new_spot = RosterSpot(team_id=team.id, player_id=player_id)
             db.session.add(new_spot)
 
-    # Lock the team
-    team.locked = True
-    db.session.commit()
+        # Step 7: Lock the team
+        team.locked = True
+        db.session.commit()
 
-    return jsonify({"message": "Roster submitted and locked successfully!"}), 200
-
+        return jsonify({"message": "Roster submitted and locked successfully!"}), 200
+    except Exception as e:
+        # Step 8: Handle errors and rollback if necessary
+        db.session.rollback()
+        return jsonify({"error": "An error occurred while submitting the roster", "details": str(e)}), 500
 #leaderboard
 @app.route('/leaderboard', methods=['GET'])
 def get_leaderboard():
