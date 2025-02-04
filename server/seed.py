@@ -1,5 +1,5 @@
 from app import app, db
-from models import Player
+from models import Player, User
 
 def seed_players():
     """Seed the database with initial top 30 players."""
@@ -48,6 +48,25 @@ def seed_players():
     db.session.commit()
     print("Database seeded with initial players.")
 
+
+def seed_users():
+    """Seed the database with initial users."""
+    users = [
+        {"username": "user1", "email": "user1@example.com", "password": "password1"},
+        {"username": "user2", "email": "user2@example.com", "password": "password2"},
+        # Add more users here
+    ]
+
+    for user_data in users:
+        user = User(username=user_data["username"], email=user_data["email"])
+        user.set_password(user_data["password"])  # Use the method to hash the password
+        db.session.add(user)
+
+    db.session.commit()
+    print("Database seeded with initial users.")
+
+
 if __name__ == '__main__':
     with app.app_context():
         seed_players()
+        seed_users()

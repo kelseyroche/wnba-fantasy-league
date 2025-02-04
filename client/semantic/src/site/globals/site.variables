@@ -1,3 +1,48 @@
 /*******************************
      User Global Variables
 *******************************/
+
+/* site.variables */
+@siteName  : 'My Custom App';
+
+/* Global Colors */
+@primaryColor     : #1a73e8;  /* Main color for primary actions */
+@secondaryColor   : #ff9800;  /* Secondary color for highlights */
+@tertiaryColor    : #4caf50;  /* Tertiary color for additional elements */
+@brandColor       : #f44336;  /* Brand-specific color */
+
+/* Text Colors */
+@textColor        : #212121;  /* Default text color */
+@headerColor      : #37474f;  /* Color for headers */
+@linkColor        : #1e88e5;  /* Color for links */
+@linkHoverColor   : shade(@linkColor, 10%);  /* Hover state for links */
+
+/* Background Colors */
+@pageBackground   : #f5f5f5;  /* Background color for the entire page */
+@contentBackground: #ffffff;  /* Background color for content areas */
+@inputBackground  : #ffffff;  /* Background for input fields */
+
+/* Border Colors */
+@borderColor      : #e0e0e0;  /* Default border color */
+@dividerColor     : #bdbdbd;  /* Color for dividers */
+
+/* Font */
+@fontName         : 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+@fontSize         : 14px;
+
+/* Button */
+@buttonBackgroundColor: @primaryColor;
+@buttonTextColor      : #ffffff;  /* Text color for buttons */
+
+/* Menu */
+@menuBackgroundColor  : @primaryColor;
+@menuTextColor        : #ffffff;
+@menuItemHoverColor   : lighten(@primaryColor, 10%);
+
+/* Header */
+@headerBackgroundColor: @secondaryColor;
+@headerTextColor      : @headerColor;
+
+/* Custom Spacing */
+@padding              : 1em;  /* Default padding */
+@margin               : 1em;  /* Default margin */
