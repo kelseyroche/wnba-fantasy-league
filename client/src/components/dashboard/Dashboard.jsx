@@ -1,7 +1,5 @@
 // import React, { useState, useEffect } from "react";
 // import { DndContext, closestCenter } from "@dnd-kit/core";
-// import { arrayMove, SortableContext, sortableKeyboardCoordinates } from "@dnd-kit/sortable";
-// import { KeyboardSensor, PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 // import PlayerCarousel from "./PlayerCarousel";
 // import Roster from "./Roster";
 // import NavBar from '../common/NavBar';
@@ -41,12 +39,41 @@
 //     }
 //   };
 
+//   const handleSubmitRoster = () => {
+//     const filledRoster = roster.filter(spot => spot.player !== null);
+//     if (filledRoster.length === roster.length) {
+//       fetch("http://localhost:5555/submit_roster", {
+//         method: "POST",
+//         headers: { "Content-Type": "application/json" },
+//         body: JSON.stringify({ roster: filledRoster }),
+//         credentials: "include", 
+//       })
+//       .then(response => {
+//         if (!response.ok) {
+//           throw new Error(`HTTP error! status: ${response.status}`);
+//         }
+//         return response.json();
+//       })
+//       .then(data => {
+//         alert("Roster submitted successfully!");
+//         console.log("Roster submitted:", data);
+//       })
+//       .catch(error => {
+//         console.error("Error submitting roster:", error);
+//         alert("There was an error submitting your roster.");
+//       });
+//     } else {
+//       alert("Please fill all roster spots before submitting.");
+//     }
+//   };
+
 //   return (
 //     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
 //       <NavBar />
 //       <h1>Team Dashboard</h1>
 //       <PlayerCarousel players={players} />
 //       <Roster roster={roster} />
+//       <button onClick={handleSubmitRoster}>Submit Roster</button>
 //     </DndContext>
 //   );
 // };
@@ -94,13 +121,45 @@ const Dashboard = () => {
     }
   };
 
+  // const handleSubmitRoster = () => {
+  //   const filledRoster = roster.filter(spot => spot.player !== null);
+  //   if (filledRoster.length === roster.length) {
+  //     fetch("http://localhost:5555/submit_roster", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         player_ids: filledRoster.map(spot => spot.player.id) // Adjusted payload structure
+  //       }),
+  //       credentials: "include", 
+  //     })
+  //     .then(response => {
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+  //       return response.json();
+  //     })
+  //     .then(data => {
+  //       alert("Roster submitted successfully!");
+  //       console.log("Roster submitted:", data);
+  //     })
+  //     .catch(error => {
+  //       console.error("Error submitting roster:", error);
+  //       alert("There was an error submitting your roster.");
+  //     });
+  //   } else {
+  //     alert("Please fill all roster spots before submitting.");
+  //   }
+  // };
+
   const handleSubmitRoster = () => {
     const filledRoster = roster.filter(spot => spot.player !== null);
     if (filledRoster.length === roster.length) {
       fetch("http://localhost:5555/submit_roster", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ roster: filledRoster }),
+        body: JSON.stringify({
+          player_ids: filledRoster.map(spot => spot.player.id) // Ensure this matches expected format
+        }),
         credentials: "include", 
       })
       .then(response => {

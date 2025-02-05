@@ -37,9 +37,9 @@ import React, { useContext } from 'react';
           )}
         </Menu.Menu>
       </Menu>
-      <div className="ui image">
-        <img src={headerImage} alt="Header" style={{ width: '100%', height: 'auto' }} />
-      </div>
+        <div style={{ width: '100%', margin: 0, padding: 0 }}>
+            <img src={headerImage} alt="Header" style={{ width: '100%', height: 'auto' }} />
+        </div>
     </header>
   );
 }

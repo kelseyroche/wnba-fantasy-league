@@ -192,15 +192,37 @@ def view_my_team():
     return jsonify({"team": roster, "season_score": team.season_score}), 200
 
 # Submit and lock roster
+
+# @app.route('/submit_roster', methods=['POST'])
+# def submit_roster():
+#     """Submit and lock the user's roster for the season."""
+#     # Step 1: Authenticate user
+#     user = get_current_user()
+#     if not user:
+#         return jsonify({"error": "Unauthorized"}), 401
+
+#     # Step 2: Check if the team exists and is not locked
+#     team = user.team
+#     if not team:
+#         return jsonify({"error": "No team found for this user"}), 404
+
+#     if team.locked:
+#         return jsonify({"error": "Roster is already locked and cannot be changed"}), 400
+
+#     # Step 3: Validate incoming data
+#     data = request.json
+#     player_ids = [spot['player']['id'] for spot in data.get('roster', [])]  # Adjusted to match frontend structure
+
+#     if len(player_ids) != 5:
+#         return jsonify({"error": "You must submit exactly 5 players"}), 400
+
 @app.route('/submit_roster', methods=['POST'])
 def submit_roster():
     """Submit and lock the user's roster for the season."""
-    # Step 1: Authenticate user
     user = get_current_user()
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
 
-    # Step 2: Check if the team exists and is not locked
     team = user.team
     if not team:
         return jsonify({"error": "No team found for this user"}), 404
@@ -208,12 +230,42 @@ def submit_roster():
     if team.locked:
         return jsonify({"error": "Roster is already locked and cannot be changed"}), 400
 
-    # Step 3: Validate incoming data
     data = request.json
-    player_ids = data.get('player_ids')
+    if not data:
+        return jsonify({"error": "Invalid request format"}), 400
 
-    if not player_ids or len(player_ids) != 5:
+    # Log received data for debugging
+    print("Received data:", data)
+
+    player_ids = [spot['player']['id'] for spot in data.get('roster', [])]
+
+    if len(player_ids) != 5:
         return jsonify({"error": "You must submit exactly 5 players"}), 400
+
+    total_value = 0
+    for player_id in player_ids:
+        player = Player.query.get(player_id)
+        if not player:
+            return jsonify({"error": f"Player with ID {player_id} not found"}), 404
+        total_value += player.value
+
+    if total_value > 30:
+        return jsonify({"error": "Total value of selected players exceeds the limit"}), 400
+
+    try:
+        RosterSpot.query.filter_by(team_id=team.id).delete()
+        for player_id in player_ids:
+            new_spot = RosterSpot(team_id=team.id, player_id=player_id)
+            db.session.add(new_spot)
+
+        team.locked = True
+        db.session.commit()
+
+        return jsonify({"message": "Roster submitted and locked successfully!"}), 200
+    except Exception as e:
+        db.session.rollback()
+        print("Error:", e)
+        return jsonify({"error": "An error occurred while submitting the roster", "details": str(e)}), 500
 
     # Step 4: Validate player existence and calculate total value
     total_value = 0
@@ -223,13 +275,12 @@ def submit_roster():
             return jsonify({"error": f"Player with ID {player_id} not found"}), 404
         total_value += player.value
 
-    # Example value limit check, adjust as necessary
-    if total_value > 30:
+    if total_value > 30:  # Example value limit check
         return jsonify({"error": "Total value of selected players exceeds the limit"}), 400
 
     try:
         # Step 5: Clear existing roster spots
-        db.session.query(RosterSpot).filter_by(team_id=team.id).delete()
+        RosterSpot.query.filter_by(team_id=team.id).delete()
 
         # Step 6: Add new players to the roster
         for player_id in player_ids:
@@ -245,6 +296,8 @@ def submit_roster():
         # Step 8: Handle errors and rollback if necessary
         db.session.rollback()
         return jsonify({"error": "An error occurred while submitting the roster", "details": str(e)}), 500
+    
+
 #leaderboard
 @app.route('/leaderboard', methods=['GET'])
 def get_leaderboard():
