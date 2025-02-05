@@ -1,8 +1,10 @@
+
 // import React, { useState, useEffect } from "react";
 // import { DndContext, closestCenter } from "@dnd-kit/core";
 // import PlayerCarousel from "./PlayerCarousel";
 // import Roster from "./Roster";
 // import NavBar from '../common/NavBar';
+// import './Dashboard.css'; // Import your custom CSS
 
 // const Dashboard = () => {
 //   const [players, setPlayers] = useState([]);
@@ -13,6 +15,7 @@
 //     { position: "PF", player: null },
 //     { position: "C", player: null },
 //   ]);
+//   const [seasonScore, setSeasonScore] = useState(null);
 
 //   useEffect(() => {
 //     fetch("http://localhost:5555/players", {
@@ -26,6 +29,20 @@
 //     })
 //     .then(data => setPlayers(data))
 //     .catch(error => console.error("Error fetching players:", error));
+//   }, []);
+
+//   useEffect(() => {
+//     fetch("http://localhost:5555/my_team", {
+//       credentials: "include",
+//     })
+//     .then(response => {
+//       if (!response.ok) {
+//         throw new Error(`HTTP error! status: ${response.status}`);
+//       }
+//       return response.json();
+//     })
+//     .then(data => setSeasonScore(data.season_score))
+//     .catch(error => console.error("Error fetching team score:", error));
 //   }, []);
 
 //   const handleDragEnd = (event) => {
@@ -45,7 +62,9 @@
 //       fetch("http://localhost:5555/submit_roster", {
 //         method: "POST",
 //         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ roster: filledRoster }),
+//         body: JSON.stringify({
+//           player_ids: filledRoster.map(spot => spot.player.id)
+//         }),
 //         credentials: "include", 
 //       })
 //       .then(response => {
@@ -70,10 +89,17 @@
 //   return (
 //     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
 //       <NavBar />
-//       <h1>Team Dashboard</h1>
-//       <PlayerCarousel players={players} />
-//       <Roster roster={roster} />
-//       <button onClick={handleSubmitRoster}>Submit Roster</button>
+//       <div className="dashboard-container">
+//         <h1>Team Dashboard</h1>
+//         {seasonScore !== null && (
+//           <div>
+//             <h2>Season Score: {seasonScore}</h2>
+//           </div>
+//         )}
+//         <PlayerCarousel players={players} />
+//         <Roster roster={roster} />
+//         <button onClick={handleSubmitRoster}>Submit Roster</button>
+//       </div>
 //     </DndContext>
 //   );
 // };
@@ -85,6 +111,7 @@ import { DndContext, closestCenter } from "@dnd-kit/core";
 import PlayerCarousel from "./PlayerCarousel";
 import Roster from "./Roster";
 import NavBar from '../common/NavBar';
+import './Dashboard.css'; // Import your custom CSS
 
 const Dashboard = () => {
   const [players, setPlayers] = useState([]);
@@ -95,6 +122,7 @@ const Dashboard = () => {
     { position: "PF", player: null },
     { position: "C", player: null },
   ]);
+  const [seasonScore, setSeasonScore] = useState(null);
 
   useEffect(() => {
     fetch("http://localhost:5555/players", {
@@ -110,6 +138,20 @@ const Dashboard = () => {
     .catch(error => console.error("Error fetching players:", error));
   }, []);
 
+  useEffect(() => {
+    fetch("http://localhost:5555/my_team", {
+      credentials: "include",
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => setSeasonScore(data.season_score))
+    .catch(error => console.error("Error fetching team score:", error));
+  }, []);
+
   const handleDragEnd = (event) => {
     const { active, over } = event;
 
@@ -121,36 +163,6 @@ const Dashboard = () => {
     }
   };
 
-  // const handleSubmitRoster = () => {
-  //   const filledRoster = roster.filter(spot => spot.player !== null);
-  //   if (filledRoster.length === roster.length) {
-  //     fetch("http://localhost:5555/submit_roster", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         player_ids: filledRoster.map(spot => spot.player.id) // Adjusted payload structure
-  //       }),
-  //       credentials: "include", 
-  //     })
-  //     .then(response => {
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! status: ${response.status}`);
-  //       }
-  //       return response.json();
-  //     })
-  //     .then(data => {
-  //       alert("Roster submitted successfully!");
-  //       console.log("Roster submitted:", data);
-  //     })
-  //     .catch(error => {
-  //       console.error("Error submitting roster:", error);
-  //       alert("There was an error submitting your roster.");
-  //     });
-  //   } else {
-  //     alert("Please fill all roster spots before submitting.");
-  //   }
-  // };
-
   const handleSubmitRoster = () => {
     const filledRoster = roster.filter(spot => spot.player !== null);
     if (filledRoster.length === roster.length) {
@@ -158,7 +170,7 @@ const Dashboard = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          player_ids: filledRoster.map(spot => spot.player.id) // Ensure this matches expected format
+          player_ids: filledRoster.map(spot => spot.player.id)
         }),
         credentials: "include", 
       })
@@ -184,10 +196,19 @@ const Dashboard = () => {
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <NavBar />
-      <h1>Team Dashboard</h1>
-      <PlayerCarousel players={players} />
-      <Roster roster={roster} />
-      <button onClick={handleSubmitRoster}>Submit Roster</button>
+      <div className="dashboard-container">
+        <h1>Team Dashboard</h1>
+        {seasonScore !== null && (
+          <div>
+            <h2>Season Score: {seasonScore}</h2>
+          </div>
+        )}
+        <PlayerCarousel players={players} />
+        <Roster roster={roster} />
+        <button className="submit-roster-button" onClick={handleSubmitRoster}>
+          Submit Roster
+        </button>
+      </div>
     </DndContext>
   );
 };

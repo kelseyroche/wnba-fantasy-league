@@ -170,11 +170,16 @@ def view_my_team():
     """View the current user's team and their season score."""
     user = get_current_user()
     if not user:
-        return redirect(url_for('landing_page'))
+        return jsonify({"error": "Unauthorized"}), 401
 
     team = user.team
     if not team:
         return jsonify({"error": "No team found for this user"}), 404
+
+    # Ensure the team score is up-to-date
+    team.calculate_season_score()
+
+    return jsonify({"season_score": team.season_score}), 200
 
     # Update the season score
     team.calculate_season_score()

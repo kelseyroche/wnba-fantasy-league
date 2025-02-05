@@ -1,5 +1,6 @@
 // import React from "react";
 // import { useDroppable } from "@dnd-kit/core";
+// import './Dashboard.css';
 
 // const RosterSpot = ({ position, player }) => {
 //   const { setNodeRef } = useDroppable({
@@ -42,6 +43,7 @@
 
 import React from "react";
 import { useDroppable } from "@dnd-kit/core";
+import './Dashboard.css';
 
 const RosterSpot = ({ position, player }) => {
   const { setNodeRef } = useDroppable({
@@ -49,19 +51,11 @@ const RosterSpot = ({ position, player }) => {
   });
 
   return (
-    <div
-      ref={setNodeRef}
-      style={{
-        width: "150px",
-        height: "80px",
-        border: "2px dashed #ccc",
-        margin: "5px",
-        padding: "10px",
-        backgroundColor: "#f8f8f8",
-      }}
-    >
-      <p>{position}</p>
-      {player ? <p>{player.name}</p> : <p>Drag player here</p>}
+    <div ref={setNodeRef} className="roster-spot">
+      <div className="roster-spot-text">
+        <p>{position}</p>
+        {player ? <p>{player.name}</p> : <p>Drag player here</p>}
+      </div>
     </div>
   );
 };

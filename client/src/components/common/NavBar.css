@@ -1,0 +1,43 @@
+/* Custom styles for the navbar */
+.custom-navbar {
+    background-color: #8253D7 !important; /* Replace with your preferred navbar background color */
+    height: 80px;
+    border: none;
+    box-shadow: none; /* Remove default shadow if any */
+  }
+  
+  /* Custom styles for menu items (buttons) */
+  .custom-button {
+    color: #FFFFFF !important; /* Text color for the buttons */
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px 20px; /* Add padding for spacing */
+    transition: color 0.3s ease; /* Smooth transition for hover effect */
+  }
+  
+  /* Hover effect for menu items */
+  .custom-button:hover {
+    color: #FF8640 !important; /* Change color on hover */
+  }
+  
+  /* Logout button styles, if different */
+  .logout-button {
+    background-color: transparent !important; /* Transparent background */
+    border: 1px solid #FFFFFF !important; /* White border */
+    color: #FFFFFF !important; /* Text color */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth transition */
+  }
+  
+  /* Hover effect for the logout button */
+  .logout-button:hover {
+    background-color: #FF8640 !important; /* Background color on hover */
+    color: #2E3B4E !important; /* Text color on hover */
+    border-color: #FF8640 !important; /* Border color on hover */
+  }
+
+
+/* Styles for the miniLogo */
+.mini-logo {
+    width: 90px !important; /* Set desired width */
+    height: auto;           /* Maintain aspect ratio */
+  }
