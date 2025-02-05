@@ -1,0 +1,38 @@
+/* Center the container and ensure consistent padding */
+.centered-container {
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 1000px; /* Adjust to fit your design needs */
+    box-sizing: border-box;
+  }
+  
+  /* Ensure the table is responsive and centered */
+  .centered-table {
+    width: 100%;
+    margin: 0 auto;
+    border-collapse: collapse; /* Ensures no space between table borders */
+  }
+  
+  /* Header styling */
+  .centered-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #2E3B4E; /* Customize color as needed */
+  }
+  
+  /* Table styling */
+  .centered-table th, .centered-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd; /* Add border for clarity */
+  }
+  
+  .centered-table th {
+    background-color: #f4f4f4; /* Light background for header */
+    font-weight: bold;
+  }
+  
+  .centered-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternating row colors for readability */
+  }

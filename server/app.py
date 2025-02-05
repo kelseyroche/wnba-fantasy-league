@@ -7,25 +7,20 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from models import db, bcrypt, User, Team, Player, RosterSpot
 
-# Load environment variables
 load_dotenv()
 
-# Initialize Flask app
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})  # Allow all origins for testing
 
-# Database & session configuration
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///wnba_fantasy_league.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_COOKIE_NAME"] = "wnba_fantasy_session"
 app.secret_key = os.getenv("SECRET_KEY", "default_secret_key")
 
-# Initialize extensions
 db.init_app(app)
 bcrypt.init_app(app)
 migrate = Migrate(app, db)
 
-# Helper to get current user
 def get_current_user():
     user_id = session.get("user_id")
     return User.query.get(user_id) if user_id else None
@@ -59,7 +54,7 @@ def register_user():
         new_user.set_password(password)
         db.session.add(new_user)
         db.session.commit()
-        
+
         session["user_id"] = new_user.id
         return jsonify({"message": "User registered successfully!", "user_id": new_user.id}), 201
     except Exception as e:
@@ -67,23 +62,6 @@ def register_user():
         return jsonify({"error": "Database error", "details": str(e)}), 500
 
 # Login route
-# @app.route('/login', methods=['POST'])
-# def login_user():
-#     """Log in a user."""
-#     data = request.json
-#     email = data.get('email')
-#     password = data.get('password')
-
-#     if not email or not password:
-#         return jsonify({"error": "Email and password are required"}), 400
-
-#     user = User.query.filter_by(email=email).first()
-#     if user and user.check_password(password):
-#         session["user_id"] = user.id
-#         return redirect(url_for('view_my_team'))
-
-#     return jsonify({"error": "Invalid email or password"}), 401
-
 @app.route('/login', methods=['POST'])
 def login_user():
     """Log in a user."""
@@ -107,7 +85,8 @@ def logout_user():
     """Log out the current user."""
     session.clear()
     return redirect(url_for('landing_page'))
-#check session
+
+# Check session
 @app.route('/check_session', methods=['GET'])
 def check_session():
     """Check if a user is logged in and return their details."""
@@ -117,7 +96,7 @@ def check_session():
 
     return jsonify({"user": {"id": user.id, "username": user.username, "email": user.email}}), 200
 
-#edit profile
+# Edit profile
 @app.route('/edit_profile', methods=['POST'])
 def edit_profile():
     """Edit user profile, including password update."""
@@ -148,7 +127,7 @@ def edit_profile():
         db.session.rollback()
         return jsonify({"error": "Database error", "details": str(e)}), 500
 
-# list players
+# List players
 @app.route('/players', methods=['GET'])
 def get_players():
     """Retrieve all players from the database."""
@@ -170,18 +149,13 @@ def view_my_team():
     """View the current user's team and their season score."""
     user = get_current_user()
     if not user:
-        return jsonify({"error": "Unauthorized"}), 401
+        return redirect(url_for('landing_page'))
 
     team = user.team
     if not team:
         return jsonify({"error": "No team found for this user"}), 404
 
-    # Ensure the team score is up-to-date
-    team.calculate_season_score()
-
-    return jsonify({"season_score": team.season_score}), 200
-
-    # Update the season score
+    # Updat season score
     team.calculate_season_score()
 
     roster = [
@@ -197,30 +171,6 @@ def view_my_team():
     return jsonify({"team": roster, "season_score": team.season_score}), 200
 
 # Submit and lock roster
-
-# @app.route('/submit_roster', methods=['POST'])
-# def submit_roster():
-#     """Submit and lock the user's roster for the season."""
-#     # Step 1: Authenticate user
-#     user = get_current_user()
-#     if not user:
-#         return jsonify({"error": "Unauthorized"}), 401
-
-#     # Step 2: Check if the team exists and is not locked
-#     team = user.team
-#     if not team:
-#         return jsonify({"error": "No team found for this user"}), 404
-
-#     if team.locked:
-#         return jsonify({"error": "Roster is already locked and cannot be changed"}), 400
-
-#     # Step 3: Validate incoming data
-#     data = request.json
-#     player_ids = [spot['player']['id'] for spot in data.get('roster', [])]  # Adjusted to match frontend structure
-
-#     if len(player_ids) != 5:
-#         return jsonify({"error": "You must submit exactly 5 players"}), 400
-
 @app.route('/submit_roster', methods=['POST'])
 def submit_roster():
     """Submit and lock the user's roster for the season."""
@@ -228,7 +178,7 @@ def submit_roster():
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
 
-    team = user.team
+    team = Team.query.filter_by(user_id=user.id)
     if not team:
         return jsonify({"error": "No team found for this user"}), 404
 
@@ -239,11 +189,10 @@ def submit_roster():
     if not data:
         return jsonify({"error": "Invalid request format"}), 400
 
-    # Log received data for debugging
-    print("Received data:", data)
+    #debugging
+    app.logger.info("Received data: %s", data)
 
-    player_ids = [spot['player']['id'] for spot in data.get('roster', [])]
-
+    player_ids = data.get('player_ids', [])
     if len(player_ids) != 5:
         return jsonify({"error": "You must submit exactly 5 players"}), 400
 
@@ -269,41 +218,10 @@ def submit_roster():
         return jsonify({"message": "Roster submitted and locked successfully!"}), 200
     except Exception as e:
         db.session.rollback()
-        print("Error:", e)
+        app.logger.error("Error submitting roster: %s", e)
         return jsonify({"error": "An error occurred while submitting the roster", "details": str(e)}), 500
 
-    # Step 4: Validate player existence and calculate total value
-    total_value = 0
-    for player_id in player_ids:
-        player = Player.query.get(player_id)
-        if not player:
-            return jsonify({"error": f"Player with ID {player_id} not found"}), 404
-        total_value += player.value
-
-    if total_value > 30:  # Example value limit check
-        return jsonify({"error": "Total value of selected players exceeds the limit"}), 400
-
-    try:
-        # Step 5: Clear existing roster spots
-        RosterSpot.query.filter_by(team_id=team.id).delete()
-
-        # Step 6: Add new players to the roster
-        for player_id in player_ids:
-            new_spot = RosterSpot(team_id=team.id, player_id=player_id)
-            db.session.add(new_spot)
-
-        # Step 7: Lock the team
-        team.locked = True
-        db.session.commit()
-
-        return jsonify({"message": "Roster submitted and locked successfully!"}), 200
-    except Exception as e:
-        # Step 8: Handle errors and rollback if necessary
-        db.session.rollback()
-        return jsonify({"error": "An error occurred while submitting the roster", "details": str(e)}), 500
-    
-
-#leaderboard
+# Leaderboard
 @app.route('/leaderboard', methods=['GET'])
 def get_leaderboard():
     """Fetch all users and their team's scores."""
@@ -332,14 +250,12 @@ def update_player_score():
     player.season_points = new_season_points
     db.session.commit()
 
-    # Optionally, recalculate scores for all teams containing this player
+    # recalc scores
     teams = Team.query.join(RosterSpot).filter(RosterSpot.player_id == player.id).all()
     for team in teams:
         team.calculate_season_score()
 
     return jsonify({"message": f"Player {player.name}'s score updated successfully!"}), 200
 
-
-# Run app
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5555)  

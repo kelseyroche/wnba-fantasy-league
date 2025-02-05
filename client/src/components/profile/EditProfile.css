@@ -1,0 +1,46 @@
+/* Center the container and provide consistent padding */
+.centered-container {
+    margin: 0 auto;
+    padding: 20px;
+    max-width: 600px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+  
+  /* Header styling */
+  .centered-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #471B94; /* Deep purple for the header */
+  }
+  
+  /* Form styling for consistent look and feel */
+  .centered-form {
+    width: 100%;
+    margin: 20px 0;
+  }
+  
+  .centered-form input {
+    margin-bottom: 15px;
+    border: 2px solid #471B94; /* Deep purple border for inputs */
+    border-radius: 4px;
+    padding: 10px;
+  }
+  
+  /* Button styling */
+  .centered-form button {
+    margin-top: 10px;
+    background-color: #FF8640; /* Vibrant orange for the button */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .centered-form button:hover {
+    background-color: #e07b36; /* Slightly darker orange on hover */
+  }
