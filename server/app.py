@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 from flask_migrate import Migrate
 from models import db, bcrypt, User, Team, Player, RosterSpot
+import logging
 
 load_dotenv()
 
@@ -16,6 +17,10 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///wnba_fantasy_league.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_COOKIE_NAME"] = "wnba_fantasy_session"
 app.secret_key = os.getenv("SECRET_KEY", "default_secret_key")
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)  # Set to DEBUG level for detailed logs
+
 
 db.init_app(app)
 bcrypt.init_app(app)
@@ -34,9 +39,45 @@ def landing_page():
     return "Welcome to the WNBA Fantasy League! Please login or register."
 
 # Registration route
+# @app.route('/register', methods=['POST'])
+# def register_user():
+#     """Register a new user and create a team for them."""
+#     data = request.json
+#     username = data.get('username')
+#     email = data.get('email')
+#     password = data.get('password')
+
+#     if not username or not email or not password:
+#         return jsonify({"error": "All fields are required"}), 400
+
+#     existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
+#     if existing_user:
+#         return jsonify({"error": "User with this username or email already exists"}), 400
+
+#     try:
+#         # Create a new user
+#         new_user = User(username=username, email=email)
+#         new_user.set_password(password)
+#         db.session.add(new_user)
+#         db.session.flush()  # Flush to get the new user's ID
+
+#         # Create a new team for the user
+#         new_team = Team(user_id=new_user.id)
+#         db.session.add(new_team)
+
+#         db.session.commit()
+#         app.logger.info(f"User {new_user.username} and their team created successfully.")
+
+#         session["user_id"] = new_user.id
+#         return jsonify({"message": "User registered successfully!", "user_id": new_user.id}), 201
+#     except Exception as e:
+#         db.session.rollback()
+#         app.logger.error("Error creating user and team: %s", e)
+#         return jsonify({"error": "Database error", "details": str(e)}), 500
+
 @app.route('/register', methods=['POST'])
 def register_user():
-    """Register a new user."""
+    """Register a new user and create a team for them."""
     data = request.json
     username = data.get('username')
     email = data.get('email')
@@ -50,15 +91,27 @@ def register_user():
         return jsonify({"error": "User with this username or email already exists"}), 400
 
     try:
+        # Create a new user
         new_user = User(username=username, email=email)
         new_user.set_password(password)
         db.session.add(new_user)
+        db.session.flush()  # Flush to get the new user's ID
+        logging.debug(f"User created: {new_user}")
+
+        # Create a new team for the user
+        new_team = Team(user_id=new_user.id)
+        db.session.add(new_team)
+        logging.debug(f"Team created for user {new_user.id}")
+
+        # Commit the transaction
         db.session.commit()
+        logging.info(f"User {new_user.username} and their team committed to the database.")
 
         session["user_id"] = new_user.id
         return jsonify({"message": "User registered successfully!", "user_id": new_user.id}), 201
     except Exception as e:
         db.session.rollback()
+        logging.error("Error creating user and team: %s", e)
         return jsonify({"error": "Database error", "details": str(e)}), 500
 
 # Login route
@@ -130,18 +183,19 @@ def edit_profile():
 # List players
 @app.route('/players', methods=['GET'])
 def get_players():
-    """Retrieve all players from the database."""
-    players = Player.query.all()
-    players_data = [
-        {
-            "id": player.id,
-            "name": player.name,
-            "position": player.position,
-            "season_points": player.season_points
-        }
-        for player in players
-    ]
-    return jsonify(players_data), 200
+     """Retrieve all players from the database."""
+     players = Player.query.all()
+     players_data = [
+         {
+             "id": player.id,
+             "name": player.name,
+             "position": player.position,
+             "value": player.value,  # Include value here
+             "season_points": player.season_points
+         }
+         for player in players
+     ]
+     return jsonify(players_data), 200
 
 # View user's team
 @app.route('/my_team', methods=['GET'])
@@ -149,13 +203,13 @@ def view_my_team():
     """View the current user's team and their season score."""
     user = get_current_user()
     if not user:
-        return redirect(url_for('landing_page'))
+        return jsonify({"error": "Unauthorized"}), 401
 
     team = user.team
     if not team:
         return jsonify({"error": "No team found for this user"}), 404
 
-    # Updat season score
+    # Update the season score
     team.calculate_season_score()
 
     roster = [
@@ -178,7 +232,7 @@ def submit_roster():
     if not user:
         return jsonify({"error": "Unauthorized"}), 401
 
-    team = Team.query.filter_by(user_id=user.id)
+    team = Team.query.filter_by(user_id=user.id) #fix here #DONT CHANGE THIS!!!!!!!
     if not team:
         return jsonify({"error": "No team found for this user"}), 404
 
@@ -203,7 +257,7 @@ def submit_roster():
             return jsonify({"error": f"Player with ID {player_id} not found"}), 404
         total_value += player.value
 
-    if total_value > 30:
+    if total_value > 100: #team budget
         return jsonify({"error": "Total value of selected players exceeds the limit"}), 400
 
     try:

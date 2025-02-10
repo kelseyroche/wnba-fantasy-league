@@ -9,11 +9,11 @@ import './Dashboard.css';
 const Dashboard = () => {
   const [players, setPlayers] = useState([]);
   const [roster, setRoster] = useState([
-    { position: "PG", player: null },
-    { position: "SG", player: null },
-    { position: "SF", player: null },
-    { position: "PF", player: null },
-    { position: "C", player: null },
+    { position: "1", player: null },
+    { position: "2", player: null },
+    { position: "3", player: null },
+    { position: "4", player: null },
+    { position: "5", player: null },
   ]);
   const [seasonScore, setSeasonScore] = useState(null);
 
@@ -59,14 +59,49 @@ const Dashboard = () => {
     }
   };
 
+  // const handleSubmitRoster = () => {
+  //   const filledRoster = roster.filter(spot => spot.player !== null);
+  //   if (filledRoster.length === roster.length) {
+  //     fetch("http://localhost:5555/submit_roster", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         player_ids: filledRoster.map(spot => spot.player.id)
+  //       }),
+  //       credentials: "include", 
+  //     })
+  //     .then(response => {
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+  //       return response.json();
+  //     })
+  //     .then(data => {
+  //       alert("Roster submitted successfully!");
+  //       console.log("Roster submitted:", data);
+  //     })
+  //     .catch(error => {
+  //       console.error("Error submitting roster:", error);
+  //       alert("There was an error submitting your roster.");
+  //     });
+  //   } else {
+  //     alert("Please fill all roster spots before submitting.");
+  //   }
+  // };
+
   const handleSubmitRoster = () => {
     const filledRoster = roster.filter(spot => spot.player !== null);
+    console.log("Submitting roster:", filledRoster); // Log filled roster
+
     if (filledRoster.length === roster.length) {
+      const playerIds = filledRoster.map(spot => spot.player.id);
+      console.log("Player IDs to submit:", playerIds); // Log player IDs
+
       fetch("http://localhost:5555/submit_roster", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          player_ids: filledRoster.map(spot => spot.player.id)
+          player_ids: playerIds
         }),
         credentials: "include", 
       })

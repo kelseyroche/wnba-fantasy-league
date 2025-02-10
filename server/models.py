@@ -1,7 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 
-# Initialize
 db = SQLAlchemy()
 bcrypt = Bcrypt()
 
@@ -31,7 +30,7 @@ class Team(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     season_score = db.Column(db.Integer, default=0)
-    locked = db.Column(db.Boolean, default=False)  # Indicates if the roster is locked
+    locked = db.Column(db.Boolean, default=False)
 
     user = db.relationship("User", back_populates="team")
     roster_spots = db.relationship("RosterSpot", back_populates="team", cascade="all, delete-orphan")
@@ -40,6 +39,22 @@ class Team(db.Model):
         """Calculate the total season score based on player's season points."""
         self.season_score = sum(rs.season_points for rs in self.roster_spots)
         db.session.commit()
+
+# class Team(db.Model):
+#     __tablename__ = "teams"
+
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=True)  # Allow nullable user_id
+#     season_score = db.Column(db.Integer, default=0)
+#     locked = db.Column(db.Boolean, default=False)
+
+#     user = db.relationship("User", back_populates="team")
+#     roster_spots = db.relationship("RosterSpot", back_populates="team", cascade="all, delete-orphan")
+
+#     def calculate_season_score(self):
+#         """Calculate the total season score based on player's season points."""
+#         self.season_score = sum(rs.season_points for rs in self.roster_spots)
+#         db.session.commit()
 
 
 class Player(db.Model):

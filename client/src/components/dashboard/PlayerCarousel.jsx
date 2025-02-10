@@ -5,23 +5,24 @@ import { Button, Icon } from 'semantic-ui-react';
 import './Dashboard.css';
 
 const PlayerCard = ({ player }) => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: player.id.toString(),
-  });
-
-  const style = {
-    transform: CSS.Translate.toString(transform),
-  };
-
-  return (
-    <div ref={setNodeRef} style={style} className="player-card" {...listeners} {...attributes}>
-      <div className="player-card-text">
-        <p>{player.name}</p>
-        <p>{player.position}</p>
+    const { attributes, listeners, setNodeRef, transform } = useDraggable({
+      id: player.id.toString(),
+    });
+  
+    const style = {
+      transform: CSS.Translate.toString(transform),
+    };
+  
+    return (
+      <div ref={setNodeRef} style={style} className="player-card" {...listeners} {...attributes}>
+        <div className="player-card-text">
+          <p>{player.name}</p>
+          <p>{player.position}</p>
+          <p>Value: {player.value}</p> {/* Display player value */}
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  };
 
 const PlayerCarousel = ({ players = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -60,5 +61,7 @@ const PlayerCarousel = ({ players = [] }) => {
     </div>
   );
 };
+
+
 
 export default PlayerCarousel;
