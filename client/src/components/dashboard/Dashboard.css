@@ -26,8 +26,8 @@
   
   /* Style for the roster spots */
   .roster-spot {
-    width: 150px; /* Increased width */
-    height: 150px; /* Increased height */
+    width: 200px; /* Increased width */
+    height: 200px; /* Increased height */
     border-radius: 50%;
     background-color: #C8AFF6;
     display: flex;
@@ -44,8 +44,8 @@
   
   /* Style for player cards */
   .player-card {
-    width: 150px; /* Increased width */
-    height: 150px; /* Increased height */
+    width: 200px; /* Increased width */
+    height: 200px; /* Increased height */
     border-radius: 50%;
     background-color: #471B94;
     display: flex;

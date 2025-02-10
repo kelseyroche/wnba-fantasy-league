@@ -6,6 +6,7 @@ import NavBar from '../common/NavBar';
 import Footer from '../common/Footer';
 import './Dashboard.css'; 
 
+
 const Dashboard = () => {
   const [players, setPlayers] = useState([]);
   const [roster, setRoster] = useState([
@@ -91,19 +92,16 @@ const Dashboard = () => {
 
   const handleSubmitRoster = () => {
     const filledRoster = roster.filter(spot => spot.player !== null);
-    console.log("Submitting roster:", filledRoster); // Log filled roster
 
     if (filledRoster.length === roster.length) {
       const playerIds = filledRoster.map(spot => spot.player.id);
-      console.log("Player IDs to submit:", playerIds); // Log player IDs
+      console.log("Submitting player IDs:", playerIds); // Log the player IDs
 
       fetch("http://localhost:5555/submit_roster", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          player_ids: playerIds
-        }),
-        credentials: "include", 
+        body: JSON.stringify({ player_ids: playerIds }),
+        credentials: "include",
       })
       .then(response => {
         if (!response.ok) {

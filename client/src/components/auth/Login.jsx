@@ -1,95 +1,64 @@
-// import React, { useState, useContext } from 'react';
-//    import { useNavigate } from 'react-router-dom'; // Updated import
-//    import { AuthContext } from '../../context/AuthContext';
-//    import { Form, Button, Message, Container, Header } from 'semantic-ui-react';
-
-//    function Login() {
-//      const [email, setEmail] = useState('');
-//      const [password, setPassword] = useState('');
-//      const { login } = useContext(AuthContext);
-//      const navigate = useNavigate(); // Updated hook
-
-//      const handleSubmit = async (e) => {
-//        e.preventDefault();
-//        try {
-//          await login(email, password);
-//          navigate('/dashboard'); // Use navigate instead of history.push
-//        } catch (error) {
-//          console.error("Login failed", error);
-//        }
-//      };
-
-//      return (
-//        <Container>
-//          <Header as="h2">Login</Header>
-//          <Form onSubmit={handleSubmit}>
-//            <Form.Input
-//              label="Email"
-//              value={email}
-//              onChange={(e) => setEmail(e.target.value)}
-//            />
-//            <Form.Input
-//              label="Password"
-//              type="password"
-//              value={password}
-//              onChange={(e) => setPassword(e.target.value)}
-//            />
-//            <Button type="submit">Login</Button>
-//          </Form>
-//        </Container>
-//      );
-//    }
-
-//    export default Login;
-
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';  // Check this path
-
-import { Form, Button, Container, Header } from 'semantic-ui-react';
+import { AuthContext } from '../../context/AuthContext';
+import { Form, Button, Container, Header, Message } from 'semantic-ui-react';
+import './LoginRegister.css'; // Import the CSS file
+import backgroundImage from '../../assets/background_1.jpg'; // Ensure path is correct
 
 function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const auth = useContext(AuthContext);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
-    if (!auth) {
-        console.error("AuthContext is undefined. Make sure AuthProvider wraps the app.");
-        return <p>Error: AuthContext is not available.</p>;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+
+    try {
+      await login(email, password);
+      navigate('/dashboard');
+    } catch (error) {
+      setError("Login failed. Please check your email and password.");
     }
+  };
 
-    const { login } = auth;
-    const navigate = useNavigate();
+  return (
+    <div
+      className="auth-container"
+      style={{
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        height: '100vh',
+        width: '100vw'
+      }}
+    >
+      <Container className="auth-container">
+        <Header as="h2" className="auth-header">Login</Header>
+        <Form className="auth-form" onSubmit={handleSubmit}>
+          <Form.Input
+            label="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <Form.Input
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <Button type="submit" className="auth-button">Login</Button>
+        </Form>
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            await login(email, password);
-            navigate('/dashboard');
-        } catch (error) {
-            console.error("Login failed", error);
-        }
-    };
-
-    return (
-        <Container>
-            <Header as="h2">Login</Header>
-            <Form onSubmit={handleSubmit}>
-                <Form.Input
-                    label="Email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <Form.Input
-                    label="Password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                <Button type="submit">Login</Button>
-            </Form>
-        </Container>
-    );
+        {error && <Message negative className="auth-message">{error}</Message>}
+      </Container>
+    </div>
+  );
 }
 
 export default Login;

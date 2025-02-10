@@ -28,11 +28,10 @@
     padding: 10px;
   }
   
-  /* Button styling */
-  .centered-form button {
+/* Button styling */
+.centered-form button {
     margin-top: 10px;
-    background-color: #FF8640; /* Vibrant orange for the button */
-    color: white;
+    color: white; /* Ensures text color is white */
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -41,6 +40,21 @@
     transition: background-color 0.3s ease;
   }
   
-  .centered-form button:hover {
+  /* Orange button for updating profile */
+  .centered-form .update-profile-button {
+    background-color: #FF8640; /* Vibrant orange */
+  }
+  
+  .centered-form .update-profile-button:hover {
     background-color: #e07b36; /* Slightly darker orange on hover */
+  }
+  
+  /* Purple button for deleting account */
+  .centered-form .delete-account-button {
+    background-color: #471B94; /* Deep purple */
+    margin-left: 10px; /* Add some space between buttons */
+  }
+  
+  .centered-form .delete-account-button:hover {
+    background-color: #3d187f; /* Darker purple on hover */
   }

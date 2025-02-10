@@ -10,6 +10,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import Leaderboard from './components/leaderboard/Leaderboard';
 import EditProfile from './components/profile/EditProfile';
 
+
 function App() {
   return (
   <Router>

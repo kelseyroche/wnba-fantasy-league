@@ -179,23 +179,48 @@ def edit_profile():
     except Exception as e:
         db.session.rollback()
         return jsonify({"error": "Database error", "details": str(e)}), 500
+    
+#Delete Account
+@app.route('/delete_account', methods=['DELETE'])
+def delete_account():
+    user = get_current_user()
+    if not user:
+        return jsonify({"error": "Unauthorized"}), 401
+
+    try:
+        # Delete user's team and associated roster spots
+        if user.team:
+            RosterSpot.query.filter_by(team_id=user.team.id).delete()
+            db.session.delete(user.team)
+
+        # Delete the user
+        db.session.delete(user)
+        db.session.commit()
+
+        session.clear()  # Clear session after deletion
+        return jsonify({"message": "Account deleted successfully"}), 200
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error("Error deleting account: %s", e)
+        return jsonify({"error": "An error occurred while deleting the account", "details": str(e)}), 500
 
 # List players
 @app.route('/players', methods=['GET'])
 def get_players():
-     """Retrieve all players from the database."""
-     players = Player.query.all()
-     players_data = [
-         {
-             "id": player.id,
-             "name": player.name,
-             "position": player.position,
-             "value": player.value,  # Include value here
-             "season_points": player.season_points
-         }
-         for player in players
-     ]
-     return jsonify(players_data), 200
+    """Retrieve all players from the database."""
+    players = Player.query.all()
+    players_data = [
+        {
+            "id": player.id,
+            "name": player.name,
+            "position": player.position,
+            "value": player.value,  # Ensure this is included and correct
+            "season_points": player.season_points
+        }
+        for player in players
+    ]
+    app.logger.debug(f"Players data: {players_data}")  # Log the players data
+    return jsonify(players_data), 200
 
 # View user's team
 @app.route('/my_team', methods=['GET'])
@@ -227,54 +252,52 @@ def view_my_team():
 # Submit and lock roster
 @app.route('/submit_roster', methods=['POST'])
 def submit_roster():
-    """Submit and lock the user's roster for the season."""
-    user = get_current_user()
-    if not user:
-        return jsonify({"error": "Unauthorized"}), 401
+       user = get_current_user()
+       if not user:
+           return jsonify({"error": "Unauthorized"}), 401
 
-    team = Team.query.filter_by(user_id=user.id) #fix here #DONT CHANGE THIS!!!!!!!
-    if not team:
-        return jsonify({"error": "No team found for this user"}), 404
+       team = Team.query.filter_by(user_id=user.id).first()
+       if not team:
+           return jsonify({"error": "No team found for this user"}), 404
 
-    if team.locked:
-        return jsonify({"error": "Roster is already locked and cannot be changed"}), 400
+       if team.locked:
+           return jsonify({"error": "Roster is already locked and cannot be changed"}), 400
 
-    data = request.json
-    if not data:
-        return jsonify({"error": "Invalid request format"}), 400
+       data = request.json
+       if not data or 'player_ids' not in data:
+           return jsonify({"error": "Invalid request format"}), 400
 
-    #debugging
-    app.logger.info("Received data: %s", data)
+       app.logger.info(f"Received player IDs: {data.get('player_ids')}")  # Log received data
 
-    player_ids = data.get('player_ids', [])
-    if len(player_ids) != 5:
-        return jsonify({"error": "You must submit exactly 5 players"}), 400
+       player_ids = data.get('player_ids', [])
+       if len(player_ids) != 5:
+           return jsonify({"error": "You must submit exactly 5 players"}), 400
 
-    total_value = 0
-    for player_id in player_ids:
-        player = Player.query.get(player_id)
-        if not player:
-            return jsonify({"error": f"Player with ID {player_id} not found"}), 404
-        total_value += player.value
+       total_value = 0
+       for player_id in player_ids:
+           player = Player.query.get(player_id)
+           if not player:
+               return jsonify({"error": f"Player with ID {player_id} not found"}), 404
+           total_value += player.value
 
-    if total_value > 100: #team budget
-        return jsonify({"error": "Total value of selected players exceeds the limit"}), 400
+       if total_value > 40:  # Check if the total value exceeds the limit
+           return jsonify({"error": "Total value of selected players exceeds the limit"}), 400
 
-    try:
-        RosterSpot.query.filter_by(team_id=team.id).delete()
-        for player_id in player_ids:
-            new_spot = RosterSpot(team_id=team.id, player_id=player_id)
-            db.session.add(new_spot)
+       try:
+           RosterSpot.query.filter_by(team_id=team.id).delete()
+           for player_id in player_ids:
+               new_spot = RosterSpot(team_id=team.id, player_id=player_id)
+               db.session.add(new_spot)
 
-        team.locked = True
-        db.session.commit()
+           team.locked = True
+           db.session.commit()
 
-        return jsonify({"message": "Roster submitted and locked successfully!"}), 200
-    except Exception as e:
-        db.session.rollback()
-        app.logger.error("Error submitting roster: %s", e)
-        return jsonify({"error": "An error occurred while submitting the roster", "details": str(e)}), 500
-
+           return jsonify({"message": "Roster submitted and locked successfully!"}), 200
+       except Exception as e:
+           db.session.rollback()
+           app.logger.error("Error submitting roster: %s", e)
+           return jsonify({"error": "An error occurred while submitting the roster", "details": str(e)}), 500
+       
 # Leaderboard
 @app.route('/leaderboard', methods=['GET'])
 def get_leaderboard():
