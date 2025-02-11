@@ -23,7 +23,7 @@ function Navbar() {
           {user && (
             <>
               <Menu.Item as={Link} to="/dashboard" name="dashboard" className="custom-button">
-                Dashboard
+                Draft Portal
               </Menu.Item>
               <Menu.Item as={Link} to="/leaderboard" name="leaderboard" className="custom-button">
                 Leaderboard

@@ -222,7 +222,26 @@ def seed_players():
         {"name": "Elena Delle Donne", "position": "Forward", "value": 8, "season_points": 88},
         {"name": "Sue Bird", "position": "Guard", "value": 7, "season_points": 85},
         {"name": "Sylvia Fowles", "position": "Center", "value": 8, "season_points": 83},
-        # Add more players if needed
+        {"name": "Chelsea Gray", "position": "Guard", "value": 7, "season_points": 80},
+        {"name": "Skylar Diggins-Smith", "position": "Guard", "value": 7, "season_points": 78},
+        {"name": "Jonquel Jones", "position": "Center", "value": 9, "season_points": 95},
+        {"name": "Courtney Vandersloot", "position": "Guard", "value": 7, "season_points": 77},
+        {"name": "Liz Cambage", "position": "Center", "value": 8, "season_points": 85},
+        {"name": "Jackie Young", "position": "Guard", "value": 6, "season_points": 70},
+        {"name": "Allie Quigley", "position": "Guard", "value": 6, "season_points": 68},
+        {"name": "Kelsey Plum", "position": "Guard", "value": 7, "season_points": 75},
+        {"name": "Natasha Howard", "position": "Forward", "value": 6, "season_points": 72},
+        {"name": "Jewell Loyd", "position": "Guard", "value": 7, "season_points": 73},
+        {"name": "Tina Charles", "position": "Center", "value": 8, "season_points": 90},
+        {"name": "Kayla McBride", "position": "Guard", "value": 6, "season_points": 67},
+        {"name": "DeWanna Bonner", "position": "Forward", "value": 8, "season_points": 86},
+        {"name": "Alyssa Thomas", "position": "Forward", "value": 7, "season_points": 79},
+        {"name": "Emma Meesseman", "position": "Forward", "value": 7, "season_points": 76},
+        {"name": "Kristi Toliver", "position": "Guard", "value": 6, "season_points": 65},
+        {"name": "Myisha Hines-Allen", "position": "Forward", "value": 6, "season_points": 64},
+        {"name": "Kia Nurse", "position": "Guard", "value": 5, "season_points": 60},
+        {"name": "Brianna Turner", "position": "Forward", "value": 5, "season_points": 58},
+        {"name": "Riquna Williams", "position": "Guard", "value": 5, "season_points": 55},
     ]
 
     for player_data in players:

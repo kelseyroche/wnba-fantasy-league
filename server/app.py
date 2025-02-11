@@ -300,19 +300,20 @@ def submit_roster():
        
 # leaderboard route
 
+
 # @app.route('/leaderboard', methods=['GET'])
 # def get_leaderboard():
-#     """Fetch all users and their team's scores."""
+#     """Fetch all users and calculate their team's scores directly from roster spots."""
 #     users = User.query.all()
 #     leaderboard_data = []
 
 #     for user in users:
 #         if user.team:
-#             # Ensure the season score is up-to-date
-#             user.team.calculate_season_score()
+#             # Calculate the season score by summing the season points of all roster spots
+#             season_score = sum(rs.season_points for rs in user.team.roster_spots)
 #             leaderboard_data.append({
 #                 "username": user.username,
-#                 "season_score": user.team.season_score
+#                 "season_score": season_score
 #             })
 #         else:
 #             leaderboard_data.append({
@@ -331,7 +332,7 @@ def get_leaderboard():
     for user in users:
         if user.team:
             # Calculate the season score by summing the season points of all roster spots
-            season_score = sum(rs.season_points for rs in user.team.roster_spots)
+            season_score = sum(rs.player.season_points for rs in user.team.roster_spots)
             leaderboard_data.append({
                 "username": user.username,
                 "season_score": season_score
@@ -344,27 +345,37 @@ def get_leaderboard():
 
     return jsonify(leaderboard_data), 200
 
-# Admin route
+##ADMIN
+
 @app.route('/admin/update_player_score', methods=['POST'])
 def update_player_score():
     """Admin route to manually update player scores."""
-    data = request.json
-    player_id = data.get('player_id')
-    new_season_points = data.get('season_points')
+    try:
+        data = request.json
+        player_id = data.get('player_id')
+        new_season_points = data.get('season_points')
 
-    player = Player.query.get(player_id)
-    if not player:
-        return jsonify({"error": "Player not found"}), 404
+        app.logger.debug(f"Player ID: {player_id}, New Season Points: {new_season_points}")
 
-    player.season_points = new_season_points
-    db.session.commit()
+        player = Player.query.get(player_id)
+        if not player:
+            app.logger.error(f"Player with ID {player_id} not found")
+            return jsonify({"error": "Player not found"}), 404
 
-    # recalc scores
-    teams = Team.query.join(RosterSpot).filter(RosterSpot.player_id == player.id).all()
-    for team in teams:
-        team.calculate_season_score()
+        player.season_points = new_season_points
+        db.session.commit()
 
-    return jsonify({"message": f"Player {player.name}'s score updated successfully!"}), 200
+        # Recalculate team scores affected by this change
+        teams = Team.query.join(RosterSpot).filter(RosterSpot.player_id == player.id).all()
+        for team in teams:
+            team.calculate_season_score()
+
+        return jsonify({"message": f"Player {player.name}'s score updated successfully!"}), 200
+
+    except Exception as e:
+        app.logger.error(f"Error updating player score: {e}")
+        return jsonify({"error": "An internal error occurred", "details": str(e)}), 500
+
 
 @app.route('/team_roster', methods=['GET'])
 def get_team_roster():

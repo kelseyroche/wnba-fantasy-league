@@ -95,9 +95,9 @@ const Dashboard = () => {
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
       <NavBar />
       <div className="dashboard-container">
-        <h1>Team Dashboard</h1>
+        <h1>Draft Portal</h1>
         <div className="allowed-budget-blurb">
-          <p><strong>Allowed Budget:</strong> 45</p>
+          <p><strong>Allowed Budget:</strong> 40</p>
         </div>
         <PlayerCarousel players={players} />
         <Roster roster={roster} />

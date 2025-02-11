@@ -21,6 +21,12 @@
     font-size: 24px;
     color: #2E3B4E; /* Customize color as needed */
 }
+.centered-container h2.header {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #471B94 !important; /* Dark purple color */
+}
 
 /* Table styling */
 .centered-table th, .centered-table td {
