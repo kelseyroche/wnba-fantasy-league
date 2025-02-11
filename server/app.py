@@ -334,5 +334,61 @@ def update_player_score():
 
     return jsonify({"message": f"Player {player.name}'s score updated successfully!"}), 200
 
+#Team Roster
+# @app.route('/team_roster', methods=['GET'])
+# def get_team_roster():
+#     user = get_current_user()
+#     if not user:
+#         return jsonify({"error": "Unauthorized"}), 401
+
+#     team = user.team
+#     if not team:
+#         return jsonify({"error": "No team found for this user"}), 404
+
+#     # Retrieve all roster spots for the user's team
+#     roster_spots = RosterSpot.query.filter_by(team_id=team.id).all()
+#     roster_data = [
+#         {
+#             "player_id": rs.player.id,
+#             "player_name": rs.player.name,
+#             "position": rs.player.position,
+#             "season_points": rs.player.season_points,
+#             "value": rs.player.value
+#         }
+#         for rs in roster_spots
+#     ]
+
+#     return jsonify({"roster": roster_data}), 200
+
+@app.route('/team_roster', methods=['GET'])
+def get_team_roster():
+    user = get_current_user()
+    if not user:
+        app.logger.debug("Unauthorized access attempt.")
+        return jsonify({"error": "Unauthorized"}), 401
+
+    team = user.team
+    if not team:
+        app.logger.debug(f"No team found for user ID {user.id}")
+        return jsonify({"error": "No team found for this user"}), 404
+
+    roster_spots = RosterSpot.query.filter_by(team_id=team.id).all()
+    if not roster_spots:
+        app.logger.debug(f"No roster spots found for team ID {team.id}")
+        return jsonify({"error": "No roster spots found for this team"}), 404
+
+    roster_data = [
+        {
+            "player_id": rs.player.id,
+            "player_name": rs.player.name,
+            "position": rs.player.position,
+            "season_points": rs.player.season_points,
+            "value": rs.player.value
+        }
+        for rs in roster_spots
+    ]
+
+    return jsonify({"roster": roster_data}), 200
+
 if __name__ == '__main__':
     app.run(debug=True, port=5555)  
