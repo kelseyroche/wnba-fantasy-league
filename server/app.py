@@ -298,18 +298,50 @@ def submit_roster():
            app.logger.error("Error submitting roster: %s", e)
            return jsonify({"error": "An error occurred while submitting the roster", "details": str(e)}), 500
        
-# Leaderboard
+# leaderboard route
+
+# @app.route('/leaderboard', methods=['GET'])
+# def get_leaderboard():
+#     """Fetch all users and their team's scores."""
+#     users = User.query.all()
+#     leaderboard_data = []
+
+#     for user in users:
+#         if user.team:
+#             # Ensure the season score is up-to-date
+#             user.team.calculate_season_score()
+#             leaderboard_data.append({
+#                 "username": user.username,
+#                 "season_score": user.team.season_score
+#             })
+#         else:
+#             leaderboard_data.append({
+#                 "username": user.username,
+#                 "season_score": 0
+#             })
+
+#     return jsonify(leaderboard_data), 200
+
 @app.route('/leaderboard', methods=['GET'])
 def get_leaderboard():
-    """Fetch all users and their team's scores."""
+    """Fetch all users and calculate their team's scores directly from roster spots."""
     users = User.query.all()
-    leaderboard_data = [
-        {
-            "username": user.username,
-            "season_score": user.team.season_score if user.team else 0
-        }
-        for user in users
-    ]
+    leaderboard_data = []
+
+    for user in users:
+        if user.team:
+            # Calculate the season score by summing the season points of all roster spots
+            season_score = sum(rs.season_points for rs in user.team.roster_spots)
+            leaderboard_data.append({
+                "username": user.username,
+                "season_score": season_score
+            })
+        else:
+            leaderboard_data.append({
+                "username": user.username,
+                "season_score": 0
+            })
+
     return jsonify(leaderboard_data), 200
 
 # Admin route
@@ -333,32 +365,6 @@ def update_player_score():
         team.calculate_season_score()
 
     return jsonify({"message": f"Player {player.name}'s score updated successfully!"}), 200
-
-#Team Roster
-# @app.route('/team_roster', methods=['GET'])
-# def get_team_roster():
-#     user = get_current_user()
-#     if not user:
-#         return jsonify({"error": "Unauthorized"}), 401
-
-#     team = user.team
-#     if not team:
-#         return jsonify({"error": "No team found for this user"}), 404
-
-#     # Retrieve all roster spots for the user's team
-#     roster_spots = RosterSpot.query.filter_by(team_id=team.id).all()
-#     roster_data = [
-#         {
-#             "player_id": rs.player.id,
-#             "player_name": rs.player.name,
-#             "position": rs.player.position,
-#             "season_points": rs.player.season_points,
-#             "value": rs.player.value
-#         }
-#         for rs in roster_spots
-#     ]
-
-#     return jsonify({"roster": roster_data}), 200
 
 @app.route('/team_roster', methods=['GET'])
 def get_team_roster():

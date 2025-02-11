@@ -1,24 +1,51 @@
-.team-roster {
-    padding: 20px;
-    text-align: center;
-  }
+.team-roster-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
 
-  .roster-list {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.team-roster-heading {
+  color: #471B94; /* Dark purple color for consistency */
+  margin: 20px 0;
+}
 
-  .roster-item {
-    background-color: #f5f5f5;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    margin: 10px;
-    width: 300px;
-    text-align: left;
-  }
+.season-points-blurb {
+  background-color: #FF8640; /* Vibrant orange color */
+  color: white; /* White text for contrast */
+  padding: 10px 20px; /* Padding for bubble effect */
+  border-radius: 20px; /* Rounded corners for bubble look */
+  margin-bottom: 20px;
+  font-size: 18px;
+}
 
-  .roster-item p {
-    margin: 5px 0;
-  }
+.roster-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.roster-item {
+  background-color: #C8AFF6; /* Light purple background for roster items */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  margin: 10px;
+  width: 300px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: left;
+  transition: transform 0.2s;
+}
+
+.roster-item:hover {
+  transform: scale(1.05);
+}
+
+.roster-item p {
+  margin: 5px 0;
+  line-height: 1.5;
+  color: #ffffff; /* White text for better contrast */
+}

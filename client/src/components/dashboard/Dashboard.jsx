@@ -6,7 +6,6 @@ import NavBar from '../common/NavBar';
 import Footer from '../common/Footer';
 import './Dashboard.css'; 
 
-
 const Dashboard = () => {
   const [players, setPlayers] = useState([]);
   const [roster, setRoster] = useState([
@@ -60,42 +59,12 @@ const Dashboard = () => {
     }
   };
 
-  // const handleSubmitRoster = () => {
-  //   const filledRoster = roster.filter(spot => spot.player !== null);
-  //   if (filledRoster.length === roster.length) {
-  //     fetch("http://localhost:5555/submit_roster", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         player_ids: filledRoster.map(spot => spot.player.id)
-  //       }),
-  //       credentials: "include", 
-  //     })
-  //     .then(response => {
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! status: ${response.status}`);
-  //       }
-  //       return response.json();
-  //     })
-  //     .then(data => {
-  //       alert("Roster submitted successfully!");
-  //       console.log("Roster submitted:", data);
-  //     })
-  //     .catch(error => {
-  //       console.error("Error submitting roster:", error);
-  //       alert("There was an error submitting your roster.");
-  //     });
-  //   } else {
-  //     alert("Please fill all roster spots before submitting.");
-  //   }
-  // };
-
   const handleSubmitRoster = () => {
     const filledRoster = roster.filter(spot => spot.player !== null);
 
     if (filledRoster.length === roster.length) {
       const playerIds = filledRoster.map(spot => spot.player.id);
-      console.log("Submitting player IDs:", playerIds); // Log the player IDs
+      console.log("Submitting player IDs:", playerIds);
 
       fetch("http://localhost:5555/submit_roster", {
         method: "POST",
@@ -127,13 +96,9 @@ const Dashboard = () => {
       <NavBar />
       <div className="dashboard-container">
         <h1>Team Dashboard</h1>
-        {seasonScore !== null ? (
-          <div>
-            <h2>Team Score: {seasonScore}</h2>
-          </div>
-        ) : (
-          <p>Loading team score...</p>
-        )}
+        <div className="allowed-budget-blurb">
+          <p><strong>Allowed Budget:</strong> 45</p>
+        </div>
         <PlayerCarousel players={players} />
         <Roster roster={roster} />
         <button className="submit-roster-button" onClick={handleSubmitRoster}>

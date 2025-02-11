@@ -130,3 +130,12 @@
     background-color: #F5b766;
     transform: scale(1.05);
   }
+
+  .allowed-budget-blurb {
+    background-color: #FF8640; /* Vibrant orange color */
+    color: white; /* White text for contrast */
+    padding: 10px 20px; /* Padding for bubble effect */
+    border-radius: 20px; /* Rounded corners for bubble look */
+    margin-bottom: 20px;
+    font-size: 18px;
+  }
