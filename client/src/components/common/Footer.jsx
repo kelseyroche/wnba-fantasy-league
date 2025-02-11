@@ -1,6 +1,6 @@
 import React from 'react';
-import './NavBar.css'; // Import your CSS for styling
-import footerImage from '../../assets/footer_image_3.png'; // Import the image
+import './NavBar.css'; 
+import footerImage from '../../assets/footer_image_3.png'; 
 
 function Footer() {
   return (

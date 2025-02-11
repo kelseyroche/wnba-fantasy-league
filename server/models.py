@@ -23,21 +23,6 @@ class User(db.Model):
     def __repr__(self):
         return f"<User {self.username}>"
 
-# class Team(db.Model):
-#     __tablename__ = "teams"
-
-#     id = db.Column(db.Integer, primary_key=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-#     season_score = db.Column(db.Integer, default=0)
-#     locked = db.Column(db.Boolean, default=False)
-
-#     user = db.relationship("User", back_populates="team")
-#     roster_spots = db.relationship("RosterSpot", back_populates="team", cascade="all, delete-orphan")
-
-#     def calculate_season_score(self):
-#         """Calculate the total season score based on player's season points."""
-#         self.season_score = sum(rs.season_points for rs in self.roster_spots)
-#         db.session.commit()
 
 class Team(db.Model):
     __tablename__ = "teams"

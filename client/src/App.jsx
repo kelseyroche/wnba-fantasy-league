@@ -10,7 +10,7 @@ import Dashboard from './components/dashboard/Dashboard';
 import Leaderboard from './components/leaderboard/Leaderboard';
 import EditProfile from './components/profile/EditProfile';
 import TeamRoster from './components/roster/TeamRoster';
-import AdminUpdateScore from './components/admin/AdminUpdateScore'; // Adjust path as necessary
+import AdminUpdateScore from './components/admin/AdminUpdateScore'; 
 
 
 
@@ -27,7 +27,6 @@ function App() {
           <Route path="/leaderboard" element={<ProtectedRoute component={Leaderboard} />} />
           <Route path="/team-roster" element={<ProtectedRoute component={TeamRoster} />} />
           <Route path="/edit-profile" element={<ProtectedRoute component={EditProfile} />} />
-          {/* <Route path="/admin" component={AdminUpdateScore} /> */}
           <Route path="/admin" element={<AdminUpdateScore />} />
         </Routes>
       </AuthProvider>

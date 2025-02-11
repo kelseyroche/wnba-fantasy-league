@@ -2,8 +2,8 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { Form, Button, Container, Header, Message } from 'semantic-ui-react';
-import './LoginRegister.css'; // Import the CSS file
-import backgroundImage from '../../assets/background_1.jpg'; // Ensure path is correct
+import './LoginRegister.css'; 
+import backgroundImage from '../../assets/background_1.jpg'; 
 
 function Login() {
   const [email, setEmail] = useState('');

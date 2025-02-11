@@ -11,7 +11,7 @@ import logging
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})  # Allow all origins for testing
+CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})  
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///wnba_fantasy_league.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -19,7 +19,7 @@ app.config["SESSION_COOKIE_NAME"] = "wnba_fantasy_session"
 app.secret_key = os.getenv("SECRET_KEY", "default_secret_key")
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG)  # Set to DEBUG level for detailed logs
+logging.basicConfig(level=logging.DEBUG)  
 
 
 db.init_app(app)
@@ -38,42 +38,6 @@ def landing_page():
         return redirect(url_for('view_my_team'))
     return "Welcome to the WNBA Fantasy League! Please login or register."
 
-# Registration route
-# @app.route('/register', methods=['POST'])
-# def register_user():
-#     """Register a new user and create a team for them."""
-#     data = request.json
-#     username = data.get('username')
-#     email = data.get('email')
-#     password = data.get('password')
-
-#     if not username or not email or not password:
-#         return jsonify({"error": "All fields are required"}), 400
-
-#     existing_user = User.query.filter((User.username == username) | (User.email == email)).first()
-#     if existing_user:
-#         return jsonify({"error": "User with this username or email already exists"}), 400
-
-#     try:
-#         # Create a new user
-#         new_user = User(username=username, email=email)
-#         new_user.set_password(password)
-#         db.session.add(new_user)
-#         db.session.flush()  # Flush to get the new user's ID
-
-#         # Create a new team for the user
-#         new_team = Team(user_id=new_user.id)
-#         db.session.add(new_team)
-
-#         db.session.commit()
-#         app.logger.info(f"User {new_user.username} and their team created successfully.")
-
-#         session["user_id"] = new_user.id
-#         return jsonify({"message": "User registered successfully!", "user_id": new_user.id}), 201
-#     except Exception as e:
-#         db.session.rollback()
-#         app.logger.error("Error creating user and team: %s", e)
-#         return jsonify({"error": "Database error", "details": str(e)}), 500
 
 @app.route('/register', methods=['POST'])
 def register_user():
@@ -91,14 +55,14 @@ def register_user():
         return jsonify({"error": "User with this username or email already exists"}), 400
 
     try:
-        # Create a new user
+        # Create new user
         new_user = User(username=username, email=email)
         new_user.set_password(password)
         db.session.add(new_user)
-        db.session.flush()  # Flush to get the new user's ID
+        db.session.flush()  
         logging.debug(f"User created: {new_user}")
 
-        # Create a new team for the user
+        # Create new team for the user
         new_team = Team(user_id=new_user.id)
         db.session.add(new_team)
         logging.debug(f"Team created for user {new_user.id}")
@@ -197,12 +161,13 @@ def delete_account():
         db.session.delete(user)
         db.session.commit()
 
-        session.clear()  # Clear session after deletion
+        session.clear()  
         return jsonify({"message": "Account deleted successfully"}), 200
     except Exception as e:
         db.session.rollback()
         app.logger.error("Error deleting account: %s", e)
         return jsonify({"error": "An error occurred while deleting the account", "details": str(e)}), 500
+
 
 # List players
 @app.route('/players', methods=['GET'])
@@ -214,12 +179,12 @@ def get_players():
             "id": player.id,
             "name": player.name,
             "position": player.position,
-            "value": player.value,  # Ensure this is included and correct
+            "value": player.value,  
             "season_points": player.season_points
         }
         for player in players
     ]
-    app.logger.debug(f"Players data: {players_data}")  # Log the players data
+    app.logger.debug(f"Players data: {players_data}")  
     return jsonify(players_data), 200
 
 # View user's team
@@ -267,7 +232,7 @@ def submit_roster():
        if not data or 'player_ids' not in data:
            return jsonify({"error": "Invalid request format"}), 400
 
-       app.logger.info(f"Received player IDs: {data.get('player_ids')}")  # Log received data
+       app.logger.info(f"Received player IDs: {data.get('player_ids')}")  
 
        player_ids = data.get('player_ids', [])
        if len(player_ids) != 5:
@@ -280,7 +245,7 @@ def submit_roster():
                return jsonify({"error": f"Player with ID {player_id} not found"}), 404
            total_value += player.value
 
-       if total_value > 40:  # Check if the total value exceeds the limit
+       if total_value > 40:  
            return jsonify({"error": "Total value of selected players exceeds the limit"}), 400
 
        try:
@@ -331,7 +296,6 @@ def get_leaderboard():
 
     for user in users:
         if user.team:
-            # Calculate the season score by summing the season points of all roster spots
             season_score = sum(rs.player.season_points for rs in user.team.roster_spots)
             leaderboard_data.append({
                 "username": user.username,
@@ -365,7 +329,6 @@ def update_player_score():
         player.season_points = new_season_points
         db.session.commit()
 
-        # Recalculate team scores affected by this change
         teams = Team.query.join(RosterSpot).filter(RosterSpot.player_id == player.id).all()
         for team in teams:
             team.calculate_season_score()
