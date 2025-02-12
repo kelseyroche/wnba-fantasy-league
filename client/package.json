@@ -1,5 +1,5 @@
 {
-  "homepage": "https://<Username>.github.io/<Repository-name>",
+  "homepage": "https://kelseyroche.github.io/wnba-fantasy-league",
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build" 
+    "deploy": "gh-pages -d dist" 
   },
   "dependencies": {
     "fomantic-ui": "^2.9.3",
