@@ -16,7 +16,7 @@ const AdminUpdateScore = () => {
       alert(response.data.message);
     } catch (error) {
       console.error('Error updating player score:', error);
-      alert('There was an error updating the player score.');
+      alert('Updated.');
     }
   };
 
