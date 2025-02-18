@@ -13,7 +13,7 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app, supports_credentials=True, resources={r"/*": {"origins": "*"}})  
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///wnba_fantasy_league.db")
+app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///instance/wnba_fantasy_league.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_COOKIE_NAME"] = "wnba_fantasy_session"
 app.secret_key = os.getenv("SECRET_KEY", "default_secret_key")
