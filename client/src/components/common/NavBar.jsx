@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { Menu, Image, Button } from 'semantic-ui-react';
-import './Navbar.css'; 
+import './NavBar.css'; 
 
 // images
 import miniLogo from '../../assets/mini_logo_transparent.png';
