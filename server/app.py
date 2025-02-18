@@ -106,10 +106,13 @@ def logout_user():
 # Check session
 @app.route('/check_session', methods=['GET'])
 def check_session():
+    app.logger.debug(f"Session contents: {session.items()}")
     """Check if a user is logged in and return their details."""
     user = get_current_user()
     if not user:
+        app.logger.debug("User not found in session.")
         return jsonify({"error": "Not logged in"}), 401
+    app.logger.debug("User not found in session.")
 
     return jsonify({"user": {"id": user.id, "username": user.username, "email": user.email}}), 200
 
