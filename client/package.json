@@ -13,7 +13,8 @@
     "fomantic-ui": "^2.9.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "serve": "^14.0.1" 
+    "react-router-dom": "^7.1.5",
+    "serve": "^14.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.17.0",
