@@ -23,3 +23,4 @@ SQLAlchemy==1.4.47
 python-dotenv==1.0.0
 gunicorn==20.1.0
 bcrypt==4.0.1
+flask_bcrypt==1.0.1
