@@ -18,7 +18,7 @@ const EditProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5555/edit_profile', {
+      const response = await axios.post('${import.meta.env.VITE_API_URL}/edit_profile', {
         username,
         email,
         current_password: currentPassword,
@@ -36,7 +36,7 @@ const EditProfile = () => {
 const handleDeleteAccount = async () => {
     if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
       try {
-        const response = await axios.delete('http://localhost:5555/delete_account', {
+        const response = await axios.delete('${import.meta.env.VITE_API_URL}/delete_account', {
           withCredentials: true,
         });
         alert(response.data.message);

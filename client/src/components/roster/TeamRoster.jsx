@@ -11,7 +11,7 @@ const TeamRoster = () => {
   useEffect(() => {
     const checkUserSession = async () => {
       try {
-        const response = await fetch("http://localhost:5555/check_session", {
+        const response = await fetch("${import.meta.env.VITE_API_URL}/check_session", {
           credentials: "include",
         });
 
@@ -34,7 +34,7 @@ const TeamRoster = () => {
 
     const fetchTeamRoster = async () => {
       try {
-        const response = await fetch("http://localhost:5555/team_roster", {
+        const response = await fetch("${import.meta.env.VITE_API_URL}/team_roster", {
           credentials: "include",
         });
 

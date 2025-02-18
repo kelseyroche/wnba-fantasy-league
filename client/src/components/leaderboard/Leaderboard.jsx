@@ -67,7 +67,7 @@ const Leaderboard = () => {
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        const response = await axios.get('http://localhost:5555/leaderboard');
+        const response = await axios.get('${import.meta.env.VITE_API_URL}/leaderboard');
         const sortedLeaderboard = response.data.sort((a, b) => b.season_score - a.season_score);
         setLeaderboard(sortedLeaderboard);
       } catch (error) {
