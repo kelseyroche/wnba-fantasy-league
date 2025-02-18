@@ -18,7 +18,7 @@ const Dashboard = () => {
   const [seasonScore, setSeasonScore] = useState(null);
 
   useEffect(() => {
-    fetch("${import.meta.env.VITE_API_URL}/players", {
+    fetch(`${import.meta.env.VITE_API_URL}/players`, {
       credentials: "include", 
     })
     .then(response => {
@@ -32,7 +32,7 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    fetch("${import.meta.env.VITE_API_URL}/my_team", {
+    fetch(`${import.meta.env.VITE_API_URL}/my_team`, {
       credentials: "include",
     })
     .then(response => {
@@ -66,7 +66,7 @@ const Dashboard = () => {
       const playerIds = filledRoster.map(spot => spot.player.id);
       console.log("Submitting player IDs:", playerIds);
 
-      fetch("${import.meta.env.VITE_API_URL}/submit_roster", {
+      fetch(`${import.meta.env.VITE_API_URL}/submit_roster`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ player_ids: playerIds }),
