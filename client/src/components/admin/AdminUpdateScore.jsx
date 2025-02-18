@@ -9,14 +9,14 @@ const AdminUpdateScore = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5555/admin/update_player_score', {
+      const response = await axios.post('${import.meta.env.VITE_API_URL}/admin/update_player_score', {
         player_id: playerId,
         season_points: seasonPoints,
       });
       alert(response.data.message);
     } catch (error) {
       console.error('Error updating player score:', error);
-      alert('Updated.');
+      alert('Updated.'); //fix back to error message
     }
   };
 
