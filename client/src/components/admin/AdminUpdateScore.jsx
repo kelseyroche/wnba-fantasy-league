@@ -9,7 +9,7 @@ const AdminUpdateScore = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('${import.meta.env.VITE_API_URL}/admin/update_player_score', {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/admin/update_player_score`, {
         player_id: playerId,
         season_points: seasonPoints,
       });
